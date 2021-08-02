@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db_seasonality:
+    image: postgres
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=mydatabaseuser
+      - POSTGRES_PASSWORD=mypassword
+    ports:
+      - '1000:5432'
+    volumes:
+      - postgres_data_seasonality:/var/lib/postgresql/data
+volumes:
+  postgres_data_seasonality:
