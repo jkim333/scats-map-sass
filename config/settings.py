@@ -28,6 +28,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
 STRIPE_ENDPOINT_SECRET = os.environ['STRIPE_ENDPOINT_SECRET']
+STRIPE_DEBUG = bool(int(os.environ['DEBUG']))
 
 FRONTEND_DOMAIN = os.environ['FRONTEND_DOMAIN']
 

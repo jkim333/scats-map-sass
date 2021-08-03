@@ -14,6 +14,14 @@ FRONTEND_DOMAIN = f'{settings.FRONTEND_DOMAIN}/checkout'
 
 STRIPE_ENDPOINT_SECRET = settings.STRIPE_ENDPOINT_SECRET
 
+if not settings.STRIPE_DEBUG:
+    endpoint = stripe.WebhookEndpoint.create(
+        url='https://{settings.ALLOWED_HOST}/payments/stripe-webhook/',
+        enabled_events=[
+            'checkout.session.completed',
+        ],
+    )
+
 
 class CreateCheckoutSessionView(APIView):
     """
