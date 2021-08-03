@@ -27,6 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY']
 
 STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
+STRIPE_ENDPOINT_SECRET = os.environ['STRIPE_ENDPOINT_SECRET']
+
 FRONTEND_DOMAIN = os.environ['FRONTEND_DOMAIN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
