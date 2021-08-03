@@ -16,6 +16,7 @@ class PublicUsersApiTests(TestCase):
         data = {
             'email': 'test@test.com',
             'password': 'testpass123',
+            're_password': 'testpass123',
             'first_name': 'John',
             'last_name': 'Doe',
             'company_name': '3DP'
@@ -35,6 +36,7 @@ class PublicUsersApiTests(TestCase):
         """
         data = {
             'password': 'testpass123',
+            're_password': 'testpass123',
             'first_name': 'John',
             'last_name': 'Doe',
             'company_name': '3DP'
@@ -53,6 +55,7 @@ class PublicUsersApiTests(TestCase):
         data = {
             'email': 'test@test.com',
             'password': 'testpass123',
+            're_password': 'testpass123',
             'last_name': 'Doe',
             'company_name': '3DP'
         }
@@ -70,6 +73,7 @@ class PublicUsersApiTests(TestCase):
         data = {
             'email': 'test@test.com',
             'password': 'testpass123',
+            're_password': 'testpass123',
             'first_name': 'John',
             'company_name': '3DP'
         }
@@ -87,6 +91,7 @@ class PublicUsersApiTests(TestCase):
         data = {
             'email': 'test@test.com',
             'password': 'testpass123',
+            're_password': 'testpass123',
             'first_name': 'John',
             'last_name': 'Doe',
         }
@@ -107,6 +112,7 @@ class PublicUsersApiTests(TestCase):
         data = {
             'email': 'test@test.com',
             'password': 'testpass123',
+            're_password': 'testpass123',
             'first_name': 'John',
             'last_name': 'Doe',
             'company_name': '3DP'
@@ -115,8 +121,8 @@ class PublicUsersApiTests(TestCase):
             '/auth/users/',
             data
         )
-        user = get_user_model().objects.all()[0]
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        user = get_user_model().objects.all()[0]
         self.assertEqual(user.credit, 0)
 
 
