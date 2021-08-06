@@ -30,3 +30,14 @@ class OrderItem(models.Model):
     product_description = models.TextField()
     product_unit_price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
+
+
+class Subscription(models.Model):
+    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+    stripe_customer_id = models.CharField(max_length=50)
+    stripe_subscription_id = models.CharField(max_length=50)
+    total_price = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Subscription id: {self.pk}'

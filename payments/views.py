@@ -37,52 +37,67 @@ class CreateCheckoutSessionView(APIView):
         email = request.user.email
 
         try:
-            orders = None
-            product_orders = None
-
-            # custom order consisting of different product items
-            orders = request.data.get('orders')
-            product_orders = [
-                {
-                    'product': Product.objects.get(id=item['product_id']),
-                    'quantity': item['quantity']
-                }
-            for item in orders]
-
-            checkout_session = stripe.checkout.Session.create(
-                customer_email=email,
-                payment_method_types=[
-                    'card',
-                ],
-                line_items=[
+            if request.data.get('subscription'):
+                # subscription model
+                checkout_session = stripe.checkout.Session.create(
+                    customer_email=email,
+                    success_url=f'{FRONTEND_DOMAIN}/success',
+                    cancel_url=f'{FRONTEND_DOMAIN}/cancelled',
+                    payment_method_types=['card'],
+                    mode='subscription',
+                    line_items=[{
+                        'price': 'price_1JLMcPCJUgzn1x20Zosa9yT3',
+                        'quantity': 1
+                    }],
+                    metadata={
+                        'subscription': True
+                    }
+                )
+            else:
+                # custom order consisting of different product items
+                orders = request.data.get('orders')
+                product_orders = [
                     {
-                        'price_data': {
-                            'currency': 'aud',
-                            'product_data': {
-                                'name': item['product'].name,
+                        'product': Product.objects.get(id=item['product_id']),
+                        'quantity': item['quantity']
+                    }
+                for item in orders]
+
+                checkout_session = stripe.checkout.Session.create(
+                    customer_email=email,
+                    payment_method_types=[
+                        'card',
+                    ],
+                    line_items=[
+                        {
+                            'price_data': {
+                                'currency': 'aud',
+                                'product_data': {
+                                    'name': item['product'].name,
+                                },
+                                'unit_amount': item['product'].unit_price,
                             },
-                            'unit_amount': item['product'].unit_price,
-                        },
-                        'quantity': item['quantity'],
-                    } for item in product_orders
-                ],
-                metadata={
-                    'product_orders': json.dumps(
-                        [
-                            {
-                                'product_id': item['product'].id,
-                                'product_name': item['product'].name,
-                                'product_unit_price': item['product'].unit_price,
-                                'product_description': item['product'].description,
-                                'quantity': item['quantity']
-                            } for item in product_orders
-                        ]
-                    )
-                },
-                mode='payment',
-                success_url=f'{FRONTEND_DOMAIN}/success',
-                cancel_url=f'{FRONTEND_DOMAIN}/cancelled',
-            )
+                            'quantity': item['quantity'],
+                        } for item in product_orders
+                    ],
+                    metadata={
+                        'product_orders': json.dumps(
+                            [
+                                {
+                                    'product_id': item['product'].id,
+                                    'product_name': item['product'].name,
+                                    'product_unit_price': item['product'].unit_price,
+                                    'product_description': item['product'].description,
+                                    'quantity': item['quantity']
+                                } for item in product_orders
+                            ]
+                        )
+                    },
+                    mode='payment',
+                    success_url=f'{FRONTEND_DOMAIN}/success',
+                    cancel_url=f'{FRONTEND_DOMAIN}/cancelled',
+                )
+
             return Response(
                 {'checkout_url': checkout_session.url},
                 status=status.HTTP_201_CREATED
