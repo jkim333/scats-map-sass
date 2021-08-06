@@ -4,7 +4,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+import json
+from products.models import Product
+from .logics.post_checkout_success import fulfill_order
 
 import stripe
 
@@ -27,10 +31,26 @@ class CreateCheckoutSessionView(APIView):
     """
     Create checkout session in Stripe and return this url as json response.
     """
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, format=None):
+        email = request.user.email
+
         try:
+            orders = None
+            product_orders = None
+
+            # custom order consisting of different product items
+            orders = request.data.get('orders')
+            product_orders = [
+                {
+                    'product': Product.objects.get(id=item['product_id']),
+                    'quantity': item['quantity']
+                }
+            for item in orders]
+
             checkout_session = stripe.checkout.Session.create(
-                customer_email='kimjihyung3@gmail.com',
+                customer_email=email,
                 payment_method_types=[
                     'card',
                 ],
@@ -39,13 +59,26 @@ class CreateCheckoutSessionView(APIView):
                         'price_data': {
                             'currency': 'aud',
                             'product_data': {
-                            'name': 'T-shirt',
+                                'name': item['product'].name,
                             },
-                            'unit_amount': 2000,
+                            'unit_amount': item['product'].unit_price,
                         },
-                        'quantity': 1,
-                    },
+                        'quantity': item['quantity'],
+                    } for item in product_orders
                 ],
+                metadata={
+                    'product_orders': json.dumps(
+                        [
+                            {
+                                'product_id': item['product'].id,
+                                'product_name': item['product'].name,
+                                'product_unit_price': item['product'].unit_price,
+                                'product_description': item['product'].description,
+                                'quantity': item['quantity']
+                            } for item in product_orders
+                        ]
+                    )
+                },
                 mode='payment',
                 success_url=f'{FRONTEND_DOMAIN}/success',
                 cancel_url=f'{FRONTEND_DOMAIN}/cancelled',
@@ -88,7 +121,3 @@ def stripe_webhook(request):
 
     # Passed signature verification
     return HttpResponse(status=200)
-
-def fulfill_order(session):
-    # TODO: fill me in
-    print("Fulfilling order")
