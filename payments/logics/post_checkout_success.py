@@ -20,10 +20,13 @@ def fulfill_order(session):
         # subscription model
         Subscription.objects.create(
             user=customer,
+            email=customer.email,
             stripe_customer_id=session['customer'],
             stripe_subscription_id=session['subscription'],
-            total_price=session['amount_total']
+            total_price=session['amount_total'],
+            active=True
         )
+        # TODO: adjust user setting to subscribed
     else:
         # custom order consisting of different product items
         product_orders = json.loads(session['metadata']['product_orders'])

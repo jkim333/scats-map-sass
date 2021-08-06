@@ -33,11 +33,14 @@ class OrderItem(models.Model):
 
 
 class Subscription(models.Model):
-    user = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField('users.User', on_delete=models.SET_NULL, null=True)
+    email = models.EmailField()
     stripe_customer_id = models.CharField(max_length=50)
     stripe_subscription_id = models.CharField(max_length=50)
     total_price = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
+    removed_at = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
 
     def __str__(self):
         return f'Subscription id: {self.pk}'

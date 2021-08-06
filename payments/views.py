@@ -2,12 +2,14 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.utils.timezone import datetime, make_aware
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 import json
 from products.models import Product
+from .models import Subscription
 from .logics.post_checkout_success import fulfill_order
 
 import stripe
@@ -100,7 +102,7 @@ class CreateCheckoutSessionView(APIView):
 
             return Response(
                 {'checkout_url': checkout_session.url},
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_200_OK
             )
         except Exception as e:
             return Response(
@@ -136,3 +138,31 @@ def stripe_webhook(request):
 
     # Passed signature verification
     return HttpResponse(status=200)
+
+class CancelSubscriptionView(APIView):
+    """
+    Cancel subscription.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        user = request.user
+        try:
+            subscription = user.subscription
+            stripe_subscription_id = subscription.stripe_subscription_id
+        except Subscription.DoesNotExist:
+            return Response(
+                {'error': "You don't have any subscription to cancel."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Deactivate subscription both on Stripe and the database
+        stripe.Subscription.delete(stripe_subscription_id)
+        subscription.active = False
+        subscription.removed_at = make_aware(datetime.today())
+        subscription.user = None
+        subscription.save()
+        return Response(
+            {'message': 'You have successfully cancelled your subscription.'},
+            status=status.HTTP_200_OK
+        )

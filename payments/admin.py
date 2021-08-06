@@ -11,4 +11,9 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Order, OrderAdmin)
-admin.site.register(Subscription)
+
+
+class SubscriptionAdmin(admin.ModelAdmin):
+    readonly_fields = ['created_at', 'removed_at']
+
+admin.site.register(Subscription, SubscriptionAdmin)
