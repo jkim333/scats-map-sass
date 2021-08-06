@@ -192,6 +192,10 @@ DJOSER = {
 
 SITE_NAME = "SCATS Seasonality"
 
+# TODO: look into django timezone again.
+# TODO: also look into mocking to do some testing.
+TIME_ZONE = 'Australia/Melbourne'
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = 2592000

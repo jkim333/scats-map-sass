@@ -14,7 +14,7 @@ def fulfill_order(session):
     customer_email = session['customer_details']['email']
     customer = get_user_model().objects.get(email=customer_email)
 
-    subscription = session['metadata']['subscription']
+    subscription = session['metadata'].get('subscription')
 
     if subscription == 'True':
         # subscription model

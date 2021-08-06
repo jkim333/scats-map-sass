@@ -41,6 +41,17 @@ class CreateCheckoutSessionView(APIView):
         try:
             if request.data.get('subscription'):
                 # subscription model
+
+                try:
+                    # Do not allow creating more than one subscription
+                    if request.user.subscription:
+                        return Response(
+                            {'error': "You are already on a subscription."},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                except Subscription.DoesNotExist:
+                    pass
+
                 checkout_session = stripe.checkout.Session.create(
                     customer_email=email,
                     success_url=f'{FRONTEND_DOMAIN}/success',
@@ -138,6 +149,7 @@ def stripe_webhook(request):
 
     # Passed signature verification
     return HttpResponse(status=200)
+
 
 class CancelSubscriptionView(APIView):
     """
