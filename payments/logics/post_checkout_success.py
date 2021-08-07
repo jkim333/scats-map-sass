@@ -4,6 +4,9 @@ import json
 from functools import reduce
 from products.models import Product
 from payments.models import Order, OrderItem, Subscription
+from datetime import datetime
+import pytz
+from django.conf import settings
 
 
 def fulfill_order(session):
@@ -26,7 +29,6 @@ def fulfill_order(session):
             total_price=session['amount_total'],
             active=True
         )
-        # TODO: adjust user setting to subscribed
     else:
         # custom order consisting of different product items
         product_orders = json.loads(session['metadata']['product_orders'])
@@ -55,3 +57,44 @@ def fulfill_order(session):
             ]
 
             OrderItem.objects.bulk_create(order_items)
+
+def cancel_subscription(session):
+    stripe_subscription_id = session['id']
+    subscription = Subscription.objects.get(
+        stripe_subscription_id=stripe_subscription_id
+    )
+    subscription.active = False
+    tz = pytz.timezone(settings.TIME_ZONE)
+    cancelled_at = session['canceled_at']
+    subscription.cancelled_at = datetime.fromtimestamp(cancelled_at, tz)
+    subscription.user = None
+    subscription.save()
+
+    print('cancel_subscription')
+
+def update_subscription(session):
+    try:
+        stripe_subscription_id = session['id']
+        subscription = Subscription.objects.get(
+            stripe_subscription_id=stripe_subscription_id
+        )
+        scheduled_to_cancel_at = session['cancel_at']
+        cancellation_requested_at = session['canceled_at']
+
+        tz = pytz.timezone(settings.TIME_ZONE)
+
+        if scheduled_to_cancel_at:
+            scheduled_to_cancel_at = datetime.fromtimestamp(scheduled_to_cancel_at, tz)
+
+        if cancellation_requested_at:
+            cancellation_requested_at = datetime.fromtimestamp(cancellation_requested_at, tz)
+
+        subscription.scheduled_to_cancel_at = scheduled_to_cancel_at
+        subscription.cancellation_requested_at = cancellation_requested_at
+        subscription.save()
+    except Subscription.DoesNotExist:
+        # triggered when creating a new subscription.
+        # therefore, subscription does not exist in the database yet.
+        pass
+
+    print('update_subscription')

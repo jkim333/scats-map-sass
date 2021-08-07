@@ -39,7 +39,9 @@ class Subscription(models.Model):
     stripe_subscription_id = models.CharField(max_length=50)
     total_price = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
-    removed_at = models.DateTimeField(blank=True, null=True)
+    cancellation_requested_at = models.DateTimeField(blank=True, null=True)
+    scheduled_to_cancel_at = models.DateTimeField(blank=True, null=True)
+    cancelled_at = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
     def __str__(self):

@@ -2,7 +2,6 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.utils.timezone import datetime, make_aware
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +9,9 @@ from rest_framework import status
 import json
 from products.models import Product
 from .models import Subscription
-from .logics.post_checkout_success import fulfill_order
+from .logics.post_checkout_success import (
+    fulfill_order, cancel_subscription, update_subscription
+)
 
 import stripe
 
@@ -143,9 +144,18 @@ def stripe_webhook(request):
     # Handle the checkout.session.completed event
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
-
-        # Fulfill the purchase...
         fulfill_order(session)
+
+    # Handle the customer.subscription.deleted devent
+    if event['type'] == 'customer.subscription.deleted':
+        session = event['data']['object']
+        cancel_subscription(session)
+
+    # Handle the customer.subscription.updated devent
+    # Triggered when creating or updating subscription
+    if event['type'] == 'customer.subscription.updated':
+        session = event['data']['object']
+        update_subscription(session)
 
     # Passed signature verification
     return HttpResponse(status=200)
@@ -168,13 +178,12 @@ class CancelSubscriptionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Deactivate subscription both on Stripe and the database
-        stripe.Subscription.delete(stripe_subscription_id)
-        subscription.active = False
-        subscription.removed_at = make_aware(datetime.today())
-        subscription.user = None
-        subscription.save()
+        # Subscription cancellation to occur at the end of the current billing period.
+        # 'customer.subscription.updated' event is immeidately triggered.
+        # 'customer.subscription.deleted' event will be triggered when actually cancelled.
+        stripe.Subscription.modify(stripe_subscription_id, cancel_at_period_end=True)
+
         return Response(
-            {'message': 'You have successfully cancelled your subscription.'},
+            {'message': 'Your subscription will be cancelled at the end of the current billing period.'},
             status=status.HTTP_200_OK
         )
