@@ -181,6 +181,12 @@ class CancelSubscriptionView(APIView):
         # Subscription cancellation to occur at the end of the current billing period.
         # 'customer.subscription.updated' event is immeidately triggered.
         # 'customer.subscription.deleted' event will be triggered when actually cancelled.
+        stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
+        if stripe_subscription['cancel_at_period_end']:
+            return Response(
+                {'error': 'You have already requested for subscription cancellation.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         stripe.Subscription.modify(stripe_subscription_id, cancel_at_period_end=True)
 
         return Response(
