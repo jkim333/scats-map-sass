@@ -3,7 +3,8 @@ from .views import (
     CreateCheckoutSessionView,
     stripe_webhook,
     CancelSubscriptionView,
-    ReactivateCancelledSubscriptionView
+    ReactivateCancelledSubscriptionView,
+    GetSubscriptionInfoView
 )
 
 urlpatterns = [
@@ -11,4 +12,5 @@ urlpatterns = [
     path('stripe-webhook/', stripe_webhook),
     path('cancel-subscription/', CancelSubscriptionView.as_view()),
     path('reactivate-cancelled-subscription/', ReactivateCancelledSubscriptionView.as_view()),
+    path('get-subscription-info/', GetSubscriptionInfoView.as_view()),
 ]

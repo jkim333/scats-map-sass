@@ -123,6 +123,28 @@ class CreateCheckoutSessionView(APIView):
             )
 
 
+class GetSubscriptionInfoView(APIView):
+    """
+    Get subscription info.
+    Look into 'current_period_end' for the next payment date.
+    Look into 'cancel_at_period_end' to see if cancellation request is made.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = request.user
+        try:
+            subscription = user.subscription
+            stripe_subscription_id = subscription.stripe_subscription_id
+        except Subscription.DoesNotExist:
+            return Response(
+                {'error': "You do not have any subscription."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
+        return Response(stripe_subscription)
+
+
 class CancelSubscriptionView(APIView):
     """
     Cancel subscription.
@@ -136,7 +158,7 @@ class CancelSubscriptionView(APIView):
             stripe_subscription_id = subscription.stripe_subscription_id
         except Subscription.DoesNotExist:
             return Response(
-                {'error': "You don't have any subscription to cancel."},
+                {'error': "You do not have any subscription to cancel."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
