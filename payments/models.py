@@ -41,7 +41,7 @@ class Subscription(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     cancellation_requested_at = models.DateTimeField(blank=True, null=True)
     scheduled_to_cancel_at = models.DateTimeField(blank=True, null=True)
-    cancelled_at = models.DateTimeField(blank=True, null=True)
+    ended_at = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
     def __str__(self):

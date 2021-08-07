@@ -123,6 +123,74 @@ class CreateCheckoutSessionView(APIView):
             )
 
 
+class CancelSubscriptionView(APIView):
+    """
+    Cancel subscription.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        user = request.user
+        try:
+            subscription = user.subscription
+            stripe_subscription_id = subscription.stripe_subscription_id
+        except Subscription.DoesNotExist:
+            return Response(
+                {'error': "You don't have any subscription to cancel."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Subscription cancellation to occur at the end of the current billing period.
+        # 'customer.subscription.updated' event is immeidately triggered.
+        # 'customer.subscription.deleted' event will be triggered when actually cancelled.
+        stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
+        if stripe_subscription['cancel_at_period_end']:
+            return Response(
+                {'error': 'Your subscription is already due for cancellation at the end of the current billing period.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        stripe.Subscription.modify(stripe_subscription_id, cancel_at_period_end=True)
+
+        return Response(
+            {'message': 'Your subscription will be cancelled at the end of the current billing period.'},
+            status=status.HTTP_200_OK
+        )
+
+
+class ReactivateCancelledSubscriptionView(APIView):
+    """
+    Reactivate cancelled subscription.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        user = request.user
+        try:
+            subscription = user.subscription
+            stripe_subscription_id = subscription.stripe_subscription_id
+        except Subscription.DoesNotExist:
+            return Response(
+                {'error': "You do not have any subscription to reactivate."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
+        if not stripe_subscription['cancel_at_period_end']:
+            return Response(
+                {'error': "Your subscription is already active."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        stripe.Subscription.modify(
+            stripe_subscription_id,
+            cancel_at_period_end=False
+        )
+
+        return Response(
+            {'message': 'Your subscription is now successfully reactivated.'},
+            status=status.HTTP_200_OK
+        )
+
+
 @require_POST
 @csrf_exempt
 def stripe_webhook(request):
@@ -153,43 +221,10 @@ def stripe_webhook(request):
 
     # Handle the customer.subscription.updated devent
     # Triggered when creating or updating subscription
+    # updating subscription = requesting to cancel + reactivating subscription
     if event['type'] == 'customer.subscription.updated':
         session = event['data']['object']
         update_subscription(session)
 
     # Passed signature verification
     return HttpResponse(status=200)
-
-
-class CancelSubscriptionView(APIView):
-    """
-    Cancel subscription.
-    """
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, format=None):
-        user = request.user
-        try:
-            subscription = user.subscription
-            stripe_subscription_id = subscription.stripe_subscription_id
-        except Subscription.DoesNotExist:
-            return Response(
-                {'error': "You don't have any subscription to cancel."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        # Subscription cancellation to occur at the end of the current billing period.
-        # 'customer.subscription.updated' event is immeidately triggered.
-        # 'customer.subscription.deleted' event will be triggered when actually cancelled.
-        stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
-        if stripe_subscription['cancel_at_period_end']:
-            return Response(
-                {'error': 'You have already requested for subscription cancellation.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        stripe.Subscription.modify(stripe_subscription_id, cancel_at_period_end=True)
-
-        return Response(
-            {'message': 'Your subscription will be cancelled at the end of the current billing period.'},
-            status=status.HTTP_200_OK
-        )

@@ -21,6 +21,7 @@ def fulfill_order(session):
 
     if subscription == 'True':
         # subscription model
+        print(session)
         Subscription.objects.create(
             user=customer,
             email=customer.email,
@@ -65,8 +66,8 @@ def cancel_subscription(session):
     )
     subscription.active = False
     tz = pytz.timezone(settings.TIME_ZONE)
-    cancelled_at = session['canceled_at']
-    subscription.cancelled_at = datetime.fromtimestamp(cancelled_at, tz)
+    ended_at = session['ended_at']
+    subscription.ended_at = datetime.fromtimestamp(ended_at, tz)
     subscription.user = None
     subscription.save()
 
@@ -74,6 +75,9 @@ def cancel_subscription(session):
 
 def update_subscription(session):
     try:
+        # triggered when updating an existing subscription.
+        # i.e. requesting to cancel (not immeidate cancellation)
+        # and reactivating subscription.
         stripe_subscription_id = session['id']
         subscription = Subscription.objects.get(
             stripe_subscription_id=stripe_subscription_id
