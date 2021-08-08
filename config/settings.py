@@ -30,6 +30,10 @@ STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
 STRIPE_ENDPOINT_SECRET = os.environ['STRIPE_ENDPOINT_SECRET']
 STRIPE_DEBUG = bool(int(os.environ['DEBUG']))
 
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+
 FRONTEND_DOMAIN = os.environ['FRONTEND_DOMAIN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -59,6 +63,7 @@ INSTALLED_APPS = [
     'users',
     'payments',
     'products',
+    'scats',
 ]
 
 MIDDLEWARE = [

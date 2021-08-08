@@ -26,6 +26,8 @@ if not settings.STRIPE_DEBUG:
         url='https://{settings.ALLOWED_HOST}/payments/stripe-webhook/',
         enabled_events=[
             'checkout.session.completed',
+            'customer.subscription.deleted',
+            'customer.subscription.updated'
         ],
     )
 
