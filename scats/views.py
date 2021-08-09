@@ -6,8 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import Scats
 from .serializers import ScatsSerializer
-from datetime import datetime, timedelta
-import pytz
+from datetime import date, timedelta
 from .logics.seasonality_analysis import seasonality_analysis
 import json
 
@@ -44,8 +43,6 @@ class ExtractScatsDataView(APIView):
         from_date = request.query_params.get('from')
         to_date = request.query_params.get('to')
 
-        tz = pytz.timezone('Australia/Melbourne')
-
         try:
             scats_id = int(scats_id)
         except Exception:
@@ -56,11 +53,10 @@ class ExtractScatsDataView(APIView):
 
         try:
             from_date_year, from_date_month, from_date_day = [int(i) for i in from_date.split('-')]
-            from_date = datetime(
+            from_date = date(
                 from_date_year,
                 from_date_month,
                 from_date_day,
-                tzinfo=tz
             )
         except Exception:
             return Response(
@@ -70,11 +66,10 @@ class ExtractScatsDataView(APIView):
 
         try:
             to_date_year, to_date_month, to_date_day = [int(i) for i in to_date.split('-')]
-            to_date = datetime(
+            to_date = date(
                 to_date_year,
                 to_date_month,
                 to_date_day,
-                tzinfo=tz
             )
         except Exception as e:
             return Response(
@@ -127,8 +122,6 @@ class SeasonalityAnalysisView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-        tz = pytz.timezone('Australia/Melbourne')
-
         try:
             scats_id = int(scats_id)
         except Exception:
@@ -139,11 +132,10 @@ class SeasonalityAnalysisView(APIView):
 
         try:
             from_date_year, from_date_month, from_date_day = [int(i) for i in from_date.split('-')]
-            from_date = datetime(
+            from_date = date(
                 from_date_year,
                 from_date_month,
                 from_date_day,
-                tzinfo=tz
             )
         except Exception:
             return Response(
@@ -153,11 +145,10 @@ class SeasonalityAnalysisView(APIView):
 
         try:
             to_date_year, to_date_month, to_date_day = [int(i) for i in to_date.split('-')]
-            to_date = datetime(
+            to_date = date(
                 to_date_year,
                 to_date_month,
                 to_date_day,
-                tzinfo=tz
             )
         except Exception as e:
             return Response(

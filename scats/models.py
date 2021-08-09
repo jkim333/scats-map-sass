@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Scats(models.Model):
-    NB_SCATS_SITE = models.PositiveIntegerField()
+    NB_SCATS_SITE = models.IntegerField()
     QT_INTERVAL_COUNT = models.DateField()
     NB_DETECTOR = models.PositiveSmallIntegerField()
     V00 = models.IntegerField(null=True)

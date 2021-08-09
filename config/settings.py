@@ -155,6 +155,8 @@ USE_L10N = True
 
 USE_TZ = True
 
+TIME_ZONE = 'Australia/Melbourne'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -201,10 +203,6 @@ DJOSER = {
 }
 
 SITE_NAME = "SCATS Seasonality"
-
-# TODO: look into django timezone again.
-# TODO: also look into mocking to do some testing.
-TIME_ZONE = 'Australia/Melbourne'
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
