@@ -1,33 +1,46 @@
 import pandas as pd
 import numpy as np
 
+COLUMNS = [f'V{str(i).zfill(2)}' for i in range(96)] + ['CT_ALARM_24HOUR']
+
 def seasonality_analysis(scats_data):
     # convert django object instances to pandas dataframe.
     df = pd.DataFrame(list(scats_data.values()))
 
-    # calculate mean volumes for each NB_DETECTOR and time period pair.
-    # 1. make a copy of df called df_all_positive.
-    # 2. convert negative volumes in df_all_positive to None.
-    # 3. group by NB_DETECTOR and calculate mean volumes for specific
-    #    NB_DETECTOR and time period (e.g. V00).
-    # 4. If any of the mean values are still None, convert to 0.
-    df_positive_or_nan = df.copy()
-    df_positive_or_nan.loc[:, 'V00':'V95'][df_positive_or_nan.loc[:, 'V00':'V95'] < 0] = None
-    df_mean = df_positive_or_nan.groupby('NB_DETECTOR').mean().loc[:, 'V00':'V95']
+    # Calculate mean volumes for each NB_DETECTOR and time period pair.
+    # 1. Make a copy of df called df2.
+    # 2. Make df2_volumes which is the volumes only columns of df2.
+    # 2. Convert negative volumes in df2_volume to np.nan.
+    # 3. Group by NB_DETECTOR and calculate mean volumes for specific
+    #    NB_DETECTOR and time period (e.g. V00). This dataframe is called
+    #    df_mean.
+    # 4. If any of the mean values are still np.nan, convert to 0.
+    df2 = df.copy()
+
+    df2_volumes = df2.loc[:, 'V00':'V95']
+    df2_volumes[df2_volumes < 0] = np.nan
+
+    df.loc[:, 'V00':'V95'] = df2_volumes
+
+    df_mean = df.loc[:, 'NB_DETECTOR':'V95'].groupby('NB_DETECTOR').mean()
     df_mean.fillna(0)
 
-    # handle negative values
-    # 1. make a copy of df called df2.
-    # 2. convert negative volumes in df2 to None.
-    # 3. convert none to the mean values calculated from above.
-    df2 = df.copy()
-    df2.loc[:, 'V00':'V95'][df2.loc[:, 'V00':'V95'] < 0] = None
-    df2.loc[:, 'NB_DETECTOR':'V95'].groupby('NB_DETECTOR').fillna(df_mean)
+    # Handle negative values
+    # 1. Loop through each qt_interval_count and create df_specific_day.
+    # 2. For each df_specific_day, fill np.nan with df_mean.
+    #    Then, sum them up and append it to dfs.
+    # 3. Concatenate all dataframes in dfs to create df_final.
+    # 4. Convert df_final to json and return it.
+    dfs = []
+    for qt_interval_count in df['QT_INTERVAL_COUNT'].unique():
+        df_specific_day = df[df['QT_INTERVAL_COUNT'] == qt_interval_count].copy()
 
-    df3 = df2.groupby('QT_INTERVAL_COUNT').sum()
+        df_specific_day.set_index('NB_DETECTOR', drop=False, inplace=True)
 
-    df_final = pd.concat([df3.loc[:, 'V00':'V95'], df3.loc[:, ['CT_ALARM_24HOUR']]], axis=1)
+        df_specific_day.loc[:, 'NB_DETECTOR':'V95'] = df_specific_day.loc[:, 'NB_DETECTOR':'V95'].fillna(df_mean)
 
-    df_final_json = df_final.to_json(orient='table')
+        dfs.append(df_specific_day.groupby('QT_INTERVAL_COUNT').sum().loc[:, COLUMNS])
 
-    return df_final_json
+    df_final = pd.concat(dfs, axis='index')
+
+    return df_final.to_json(orient='table')

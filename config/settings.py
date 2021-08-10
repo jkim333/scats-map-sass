@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import date
 import os
 from dotenv import load_dotenv
 
@@ -202,7 +203,9 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': True
 }
 
-SITE_NAME = "SCATS Seasonality"
+# These need to be updated every time the Scats db is updated.
+QT_INTERVAL_COUNT_MIN = date(2021, 7, 1)
+QT_INTERVAL_COUNT_MAX = date(2021, 7, 31)
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True

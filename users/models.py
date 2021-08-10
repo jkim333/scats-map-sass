@@ -42,7 +42,9 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     company_name = models.CharField(max_length=50, blank=True)
-    credit = models.PositiveIntegerField(default=0)
+    scats_credit = models.PositiveIntegerField(default=0)
+    seasonality_credit = models.PositiveIntegerField(default=0)
+    subscribed = models.BooleanField(default=False)
 
     username_validator = None
 

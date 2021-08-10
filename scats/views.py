@@ -39,6 +39,15 @@ class ExtractScatsDataView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
+        user = request.user
+
+        if user.scats_credit == 0 and not user.subscribed:
+            # Not allowed if user has no credit and is not subscribed
+            return Response(
+                {'error': 'Access denied. Please purchase scats credit points or sign up for the monthly subscription.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         scats_id = from_date = request.query_params.get('scats_id')
         from_date = request.query_params.get('from')
         to_date = request.query_params.get('to')
@@ -79,7 +88,13 @@ class ExtractScatsDataView(APIView):
 
         if to_date - from_date > timedelta(days=7-1):
             return Response(
-                {'error': "Time difference between 'from' and 'date' cannot be more than 7 days."},
+                {'error': "Time difference between 'from' and 'to' cannot be more than 7 days."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if from_date - to_date > timedelta(days=0):
+            return Response(
+                {'error': "'from' cannot be greater than 'to'."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -96,6 +111,11 @@ class ExtractScatsDataView(APIView):
             )
 
         serializer = ScatsSerializer(scats_data, many=True)
+
+        if not user.subscribed:
+            user.scats_credit = user.scats_credit - 1
+            user.save()
+
         return Response(serializer.data)
 
 
@@ -106,13 +126,22 @@ class SeasonalityAnalysisView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
+        user = request.user
+
+        if user.seasonality_credit == 0 and not user.subscribed:
+            # Not allowed if user has no credit and is not subscribed
+            return Response(
+                {'error': 'Access denied. Please purchase seasonality analysis credit points or sign up for the monthly subscription.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         scats_id = from_date = request.query_params.get('scats_id')
         from_date = request.query_params.get('from')
         to_date = request.query_params.get('to')
         detectors = request.query_params.get('detectors')
         
         if detectors == 'all' or detectors == None or detectors == '':
-            detectors = [i+1 for i in range(24)]
+            detectors = [i+1 for i in range(50)]
         else:
             try:
                 detectors = [int(i) for i in detectors.split(',')]
@@ -162,6 +191,12 @@ class SeasonalityAnalysisView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        if from_date - to_date > timedelta(days=0):
+            return Response(
+                {'error': "'from' cannot be greater than 'to'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         scats_data = Scats.objects.filter(
             NB_SCATS_SITE=scats_id,
             QT_INTERVAL_COUNT__gte=from_date,
@@ -176,5 +211,9 @@ class SeasonalityAnalysisView(APIView):
             )
         
         json_data = seasonality_analysis(scats_data)
+
+        if not user.subscribed:
+            user.seasonality_credit = user.seasonality_credit - 1
+            user.save()
 
         return Response(json.loads(json_data))
