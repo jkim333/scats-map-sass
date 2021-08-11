@@ -114,7 +114,7 @@ class ExtractScatsDataView(APIView):
             NB_SCATS_SITE=scats_id,
             QT_INTERVAL_COUNT__gte=from_date,
             QT_INTERVAL_COUNT__lte=to_date
-        ).order_by('QT_INTERVAL_COUNT', 'NB_DETECTOR')
+        ).order_by('QT_INTERVAL_COUNT', 'NB_DETECTOR').distinct('QT_INTERVAL_COUNT', 'NB_DETECTOR')
 
         if len(scats_data) == 0:
             return Response(
@@ -226,7 +226,7 @@ class SeasonalityAnalysisView(APIView):
             QT_INTERVAL_COUNT__gte=from_date,
             QT_INTERVAL_COUNT__lte=to_date,
             NB_DETECTOR__in=detectors
-        ).order_by('QT_INTERVAL_COUNT', 'NB_DETECTOR')
+        ).order_by('QT_INTERVAL_COUNT', 'NB_DETECTOR').distinct('QT_INTERVAL_COUNT', 'NB_DETECTOR')
 
         if len(scats_data) == 0:
             return Response(
