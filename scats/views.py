@@ -86,6 +86,18 @@ class ExtractScatsDataView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        if from_date < settings.QT_INTERVAL_COUNT_MIN:
+            return Response(
+                {'error': f"'from' must be a date later than or equal to {settings.QT_INTERVAL_COUNT_MIN}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if to_date > settings.QT_INTERVAL_COUNT_MAX:
+            return Response(
+                {'error': f"'to' must be a date earlier than or equal to {settings.QT_INTERVAL_COUNT_MAX}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         if to_date - from_date > timedelta(days=7-1):
             return Response(
                 {'error': "Time difference between 'from' and 'to' cannot be more than 7 days."},
@@ -185,6 +197,18 @@ class SeasonalityAnalysisView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        if from_date < settings.QT_INTERVAL_COUNT_MIN:
+            return Response(
+                {'error': f"'from' must be a date later than or equal to {settings.QT_INTERVAL_COUNT_MIN}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if to_date > settings.QT_INTERVAL_COUNT_MAX:
+            return Response(
+                {'error': f"'to' must be a date earlier than or equal to {settings.QT_INTERVAL_COUNT_MAX}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         if to_date - from_date > timedelta(days=365-1):
             return Response(
                 {'error': "Time difference between 'from' and 'date' cannot be more than 365 days."},
@@ -202,7 +226,7 @@ class SeasonalityAnalysisView(APIView):
             QT_INTERVAL_COUNT__gte=from_date,
             QT_INTERVAL_COUNT__lte=to_date,
             NB_DETECTOR__in=detectors
-        )
+        ).order_by('QT_INTERVAL_COUNT', 'NB_DETECTOR')
 
         if len(scats_data) == 0:
             return Response(
