@@ -90,7 +90,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -196,6 +196,9 @@ else:
     EMAIL_USE_TLS = True
     EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
     EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
+DOMAIN = 'www.scatsmap.com.au'
+SITE_NAME = 'SCATS Map'
 
 DJOSER = {
     'LOGIN_FIELD': 'email',

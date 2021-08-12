@@ -1,3 +1,4 @@
+.prettierignore
 stripe.exe
 _tools
 /scats/test_data
