@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.conf import settings
+from django.utils import timezone
 import boto3
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
@@ -41,8 +42,11 @@ class ExtractScatsDataView(APIView):
     def get(self, request, format=None):
         user = request.user
 
-        if user.scats_credit == 0 and not user.subscribed:
+        is_user_free = timezone.now() < user.free_until
+
+        if user.scats_credit == 0 and not user.subscribed and not is_user_free:
             # Not allowed if user has no credit and is not subscribed
+            # and is not on the free period.
             return Response(
                 {'error': 'Access denied. Please purchase scats credit points or sign up for the monthly subscription.'},
                 status=status.HTTP_403_FORBIDDEN
@@ -124,7 +128,7 @@ class ExtractScatsDataView(APIView):
 
         serializer = ScatsSerializer(scats_data, many=True)
 
-        if not user.subscribed:
+        if not user.subscribed and not is_user_free:
             user.scats_credit = user.scats_credit - 1
             user.save()
 
@@ -140,8 +144,11 @@ class SeasonalityAnalysisView(APIView):
     def get(self, request, format=None):
         user = request.user
 
-        if user.seasonality_credit == 0 and not user.subscribed:
+        is_user_free = timezone.now() < user.free_until
+
+        if user.seasonality_credit == 0 and not user.subscribed and not is_user_free:
             # Not allowed if user has no credit and is not subscribed
+            #  and is not on the free period.
             return Response(
                 {'error': 'Access denied. Please purchase seasonality analysis credit points or sign up for the monthly subscription.'},
                 status=status.HTTP_403_FORBIDDEN
@@ -236,7 +243,7 @@ class SeasonalityAnalysisView(APIView):
         
         json_data = seasonality_analysis(scats_data)
 
-        if not user.subscribed:
+        if not user.subscribed and not is_user_free:
             user.seasonality_credit = user.seasonality_credit - 1
             user.save()
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 
 class CustomUserManager(BaseUserManager):
@@ -58,3 +59,7 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @property
+    def free_until(self):
+        return self.date_joined + settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION

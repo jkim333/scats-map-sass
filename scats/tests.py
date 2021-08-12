@@ -7,7 +7,7 @@ from _tools.add_to_db import add_to_db
 import json
 import pandas as pd
 import numpy as np
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from django.conf import settings
 
 
@@ -43,7 +43,7 @@ class PublicScatsApiTests(TestCase):
         )
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
-@override_settings(QT_INTERVAL_COUNT_MIN=date(2000, 1, 1), QT_INTERVAL_COUNT_MAX=date(2030, 1, 1))
+@override_settings(QT_INTERVAL_COUNT_MIN=date(2000, 1, 1), QT_INTERVAL_COUNT_MAX=date(2030, 1, 1), FREE_PERIOD_AFTER_ACCOUNT_CREATION = timedelta(days=2))
 class PrivateUsersApiTests(TestCase):
     """Test the private users API"""
     @classmethod
@@ -93,6 +93,10 @@ class PrivateUsersApiTests(TestCase):
             last_name='Doe',
             company_name='3DP'
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -123,6 +127,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             seasonality_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -153,6 +161,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             subscribed=True
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -199,6 +211,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -248,6 +264,10 @@ class PrivateUsersApiTests(TestCase):
             seasonality_credit=3,
             subscribed=True
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -293,6 +313,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -324,6 +348,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -361,6 +389,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -397,6 +429,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -427,6 +463,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -457,6 +497,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -500,6 +544,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -531,6 +579,10 @@ class PrivateUsersApiTests(TestCase):
             seasonality_credit=0,
             subscribed=False
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -571,6 +623,100 @@ class PrivateUsersApiTests(TestCase):
         self.assertEqual(user.seasonality_credit, 0)
         self.assertEqual(user.subscribed, False)
 
+    def test_extract_scats_data_view_successful_with_no_scats_credit_no_seasonality_credit_no_subscription_newly_created_account(self):
+        """
+        Test that extract scats data view is successful with no scats credit,
+        no seasonality credit, no subscription when the account is newly created and is on the free period.
+        """
+        client = APIClient()
+        user = get_user_model().objects.create_user(
+            email='test@test.com',
+            password='testpass123',
+            first_name='John',
+            last_name='Doe',
+            company_name='3DP',
+            scats_credit=0,
+            seasonality_credit=0,
+            subscribed=False
+        )
+        client.force_authenticate(user=user)
+
+        self.assertEqual(user.scats_credit, 0)
+        self.assertEqual(user.seasonality_credit, 0)
+        self.assertEqual(user.subscribed, False)
+
+        res = client.get(
+            reverse('scats:extract-scats-data')+'?scats_id=100&from=2021-07-01&to=2021-07-05'
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(user.scats_credit, 0)
+        self.assertEqual(user.seasonality_credit, 0)
+        self.assertEqual(user.subscribed, False)
+
+    def test_extract_scats_data_view_successful_with_yes_scats_credit_yes_seasonality_credit_no_subscription_newly_created_account(self):
+        """
+        Test that extract scats data view is successful with scats credit,
+        seasonality credit, no subscription when the account is newly created
+        and is on the free period.
+        """
+        client = APIClient()
+        user = get_user_model().objects.create_user(
+            email='test@test.com',
+            password='testpass123',
+            first_name='John',
+            last_name='Doe',
+            company_name='3DP',
+            scats_credit=3,
+            seasonality_credit=3,
+            subscribed=False
+        )
+        client.force_authenticate(user=user)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, False)
+
+        res = client.get(
+            reverse('scats:extract-scats-data')+'?scats_id=100&from=2021-07-01&to=2021-07-05'
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, False)
+
+    def test_extract_scats_data_view_successful_with_yes_scats_credit_yes_seasonality_credit_yes_subscription_newly_created_account(self):
+        """
+        Test that extract scats data view is successful with scats credit,
+        seasonality credit, subscription when the account is newly created and is on the free period.
+        """
+        client = APIClient()
+        user = get_user_model().objects.create_user(
+            email='test@test.com',
+            password='testpass123',
+            first_name='John',
+            last_name='Doe',
+            company_name='3DP',
+            scats_credit=3,
+            seasonality_credit=3,
+            subscribed=True
+        )
+        client.force_authenticate(user=user)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, True)
+
+        res = client.get(
+            reverse('scats:extract-scats-data')+'?scats_id=100&from=2021-07-01&to=2021-07-05'
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, True)
+
     def test_access_to_seasonality_analysis_view_with_no_scats_credit_no_seasonality_credit_no_subscription_fails(self):
         """
         Test that access to seasonality analysis view fails with
@@ -584,6 +730,10 @@ class PrivateUsersApiTests(TestCase):
             last_name='Doe',
             company_name='3DP'
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -614,6 +764,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -652,6 +806,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             subscribed=True
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -690,6 +848,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             scats_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -723,6 +885,10 @@ class PrivateUsersApiTests(TestCase):
             seasonality_credit=3,
             subscribed=True
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -761,6 +927,10 @@ class PrivateUsersApiTests(TestCase):
             scats_credit=3,
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -792,6 +962,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             seasonality_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -829,6 +1003,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             seasonality_credit=3,
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -865,6 +1043,10 @@ class PrivateUsersApiTests(TestCase):
             scats_credit=3,
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -896,6 +1078,10 @@ class PrivateUsersApiTests(TestCase):
             scats_credit=3,
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -928,6 +1114,10 @@ class PrivateUsersApiTests(TestCase):
             seasonality_credit=3,
             subscribed=False
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -966,6 +1156,10 @@ class PrivateUsersApiTests(TestCase):
             scats_credit=3,
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -996,6 +1190,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -1052,6 +1250,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -1091,6 +1293,10 @@ class PrivateUsersApiTests(TestCase):
             scats_credit=3,
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 3)
@@ -1120,6 +1326,10 @@ class PrivateUsersApiTests(TestCase):
             company_name='3DP',
             seasonality_credit=3
         )
+        # This step is necessary to make sure that
+        # user is not on the free period after creating account.
+        user.date_joined = user.date_joined - (settings.FREE_PERIOD_AFTER_ACCOUNT_CREATION + timedelta(minutes=1))
+        user.save()
         client.force_authenticate(user=user)
 
         self.assertEqual(user.scats_credit, 0)
@@ -1149,3 +1359,97 @@ class PrivateUsersApiTests(TestCase):
         self.assertEqual(user.scats_credit, 0)
         self.assertEqual(user.seasonality_credit, 2)
         self.assertEqual(user.subscribed, False)
+
+    def test_seasonality_analysis_view_successful_with_no_scats_credit_no_seasonality_credit_no_subscription_newly_created_account(self):
+        """
+        Test that seasonality analysis view is successful with no scats credit,
+        no seasonality credit, no subscription when the account is newly created and is on the free period.
+        """
+        client = APIClient()
+        user = get_user_model().objects.create_user(
+            email='test@test.com',
+            password='testpass123',
+            first_name='John',
+            last_name='Doe',
+            company_name='3DP',
+            scats_credit=0,
+            seasonality_credit=0,
+            subscribed=False
+        )
+        client.force_authenticate(user=user)
+
+        self.assertEqual(user.scats_credit, 0)
+        self.assertEqual(user.seasonality_credit, 0)
+        self.assertEqual(user.subscribed, False)
+
+        res = client.get(
+            reverse('scats:seasonality-analysis')+'?scats_id=100&from=2021-07-01&to=2021-07-05&detectors=all'
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(user.scats_credit, 0)
+        self.assertEqual(user.seasonality_credit, 0)
+        self.assertEqual(user.subscribed, False)
+
+    def test_seasonality_analysis_view_successful_with_yes_scats_credit_yes_seasonality_credit_no_subscription_newly_created_account(self):
+        """
+        Test that seasonality analysis view is successful with scats credit,
+        seasonality credit, no subscription when the account is newly created
+        and is on the free period.
+        """
+        client = APIClient()
+        user = get_user_model().objects.create_user(
+            email='test@test.com',
+            password='testpass123',
+            first_name='John',
+            last_name='Doe',
+            company_name='3DP',
+            scats_credit=3,
+            seasonality_credit=3,
+            subscribed=False
+        )
+        client.force_authenticate(user=user)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, False)
+
+        res = client.get(
+            reverse('scats:seasonality-analysis')+'?scats_id=100&from=2021-07-01&to=2021-07-05&detectors=all'
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, False)
+
+    def test_seasonality_analysis_view_successful_with_yes_scats_credit_yes_seasonality_credit_yes_subscription_newly_created_account(self):
+        """
+        Test that seasonality analysis view is successful with scats credit,
+        seasonality credit, subscription when the account is newly created and is on the free period.
+        """
+        client = APIClient()
+        user = get_user_model().objects.create_user(
+            email='test@test.com',
+            password='testpass123',
+            first_name='John',
+            last_name='Doe',
+            company_name='3DP',
+            scats_credit=3,
+            seasonality_credit=3,
+            subscribed=True
+        )
+        client.force_authenticate(user=user)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, True)
+
+        res = client.get(
+            reverse('scats:seasonality-analysis')+'?scats_id=100&from=2021-07-01&to=2021-07-05&detectors=all'
+        )
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(user.scats_credit, 3)
+        self.assertEqual(user.seasonality_credit, 3)
+        self.assertEqual(user.subscribed, True)
