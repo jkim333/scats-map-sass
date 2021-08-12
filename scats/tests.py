@@ -786,7 +786,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         self.assertEqual(user.scats_credit, 0)
         self.assertEqual(user.seasonality_credit, 2)
@@ -828,7 +828,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         self.assertEqual(user.scats_credit, 0)
         self.assertEqual(user.seasonality_credit, 0)
@@ -907,7 +907,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         self.assertEqual(user.scats_credit, 3)
         self.assertEqual(user.seasonality_credit, 3)
@@ -1136,7 +1136,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         self.assertEqual(user.scats_credit, 3)
         self.assertEqual(user.seasonality_credit, 2)
@@ -1212,7 +1212,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         self.assertEqual(user.scats_credit, 0)
         self.assertEqual(user.seasonality_credit, 2)
@@ -1230,7 +1230,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         self.assertEqual(user.scats_credit, 0)
         self.assertEqual(user.seasonality_credit, 1)
@@ -1272,7 +1272,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         self.assertEqual(user.scats_credit, 0)
         self.assertEqual(user.seasonality_credit, 2)
@@ -1348,7 +1348,7 @@ class PrivateUsersApiTests(TestCase):
         res_df.index = pd.to_datetime(res_df.index)
         res_df.index = res_df.index.tz_localize(None)
 
-        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=3)
+        self.assertAlmostEqual(np.absolute((validation_df - res_df).to_numpy()).sum(), 0, places=0)
 
         prev_val = 0
         for data in res.data['data']:

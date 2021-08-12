@@ -43,4 +43,6 @@ def seasonality_analysis(scats_data):
 
     df_final = pd.concat(dfs, axis='index')
 
+    df_final = np.floor(df_final + 0.5)
+
     return df_final.to_json(orient='table')
