@@ -8,7 +8,7 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'email', 'first_name', 'last_name',
             'company_name', 'scats_credit', 'seasonality_credit',
-            'subscribed'
+            'subscribed', 'free_until'
         ]
 
 
@@ -18,9 +18,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'email', 'first_name', 'last_name',
             'company_name', 'scats_credit', 'seasonality_credit',
-            'subscribed'
+            'subscribed', 'free_until'
         ]
         read_only_fields = [
             'id', 'email', 'scats_credit', 'seasonality_credit',
-            'subscribed'
+            'subscribed', 'free_until'
         ]
