@@ -1,6 +1,6 @@
 .prettierignore
 stripe.exe
-_tools
+# _tools
 /scats/test_data
 
 # Byte-compiled / optimized / DLL files
