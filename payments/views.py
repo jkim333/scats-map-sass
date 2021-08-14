@@ -59,7 +59,7 @@ class CreateCheckoutSessionView(APIView):
 
                 line_items=[
                     {
-                        'price': item['product_id'],
+                        'price': item['price_id'],
                         'quantity': item['quantity']
                     }
                 for item in orders]
