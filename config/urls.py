@@ -8,4 +8,5 @@ urlpatterns = [
     path('payments/', include('payments.urls')),
     path('scats/', include('scats.urls')),
     path('users/', include('users.urls')),
+    path('stripe/', include('djstripe.urls', namespace='djstripe')),
 ]

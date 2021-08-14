@@ -27,14 +27,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['SECRET_KEY']
 
-STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
-STRIPE_ENDPOINT_SECRET = os.environ['STRIPE_ENDPOINT_SECRET']
-STRIPE_DEBUG = bool(int(os.environ['DEBUG']))
+# Stripe settings
+STRIPE_LIVE_SECRET_KEY = os.environ['STRIPE_LIVE_SECRET_KEY']
+STRIPE_TEST_SECRET_KEY = os.environ['STRIPE_TEST_SECRET_KEY']
+STRIPE_LIVE_MODE = bool(int(os.environ['STRIPE_LIVE_MODE']))
+DJSTRIPE_WEBHOOK_SECRET = os.environ['STRIPE_WEBHOOK_SECRET']
+DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
+DJSTRIPE_USE_NATIVE_JSONFIELD = True
+STRIPE_SUBSCRIPTION_PRICE_ID=os.environ['STRIPE_SUBSCRIPTION_PRICE_ID']
 
+# AWS settings
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+AWS_ADD_TO_DB_BUCKET_NAME = os.environ['AWS_ADD_TO_DB_BUCKET_NAME']
 
+# Frontend domain
 FRONTEND_DOMAIN = os.environ['FRONTEND_DOMAIN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -59,11 +67,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'corsheaders',
+    'djstripe',
 
     # local
     'users',
     'payments',
-    'products',
     'scats',
 ]
 
@@ -217,7 +225,7 @@ DJOSER = {
 QT_INTERVAL_COUNT_MIN = date(2021, 7, 1)
 QT_INTERVAL_COUNT_MAX = date(2021, 7, 31)
 
-FREE_PERIOD_AFTER_ACCOUNT_CREATION = timedelta(days=2)
+FREE_PERIOD_AFTER_ACCOUNT_CREATION = timedelta(days=7)
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True

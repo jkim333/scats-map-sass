@@ -46,6 +46,7 @@ class User(AbstractUser):
     scats_credit = models.PositiveIntegerField(default=0)
     seasonality_credit = models.PositiveIntegerField(default=0)
     subscribed = models.BooleanField(default=False)
+    subscription_id = models.CharField(max_length=50 ,blank=True)
 
     username_validator = None
 
