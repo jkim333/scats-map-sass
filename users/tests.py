@@ -253,6 +253,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertNotIn("scats_credit", res_string)
         self.assertNotIn("seasonality_credit", res_string)
         self.assertNotIn("subscribed", res_string)
+        self.assertNotIn("subscription_id", res_string)
         self.assertNotIn("password", res_string)
 
     def test_auth_users_me_view_does_not_return_unrequired_fields(self):
@@ -270,6 +271,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertNotIn("scats_credit", res_string)
         self.assertNotIn("seasonality_credit", res_string)
         self.assertNotIn("subscribed", res_string)
+        self.assertNotIn("subscription_id", res_string)
         self.assertNotIn("password", res_string)
 
     def test_attempt_to_update_user_credits_and_subscription_info_via_patch_request_to_auth_users_me_view_leads_to_no_update(self):
@@ -373,6 +375,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -431,6 +434,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -461,6 +465,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -491,6 +496,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -521,6 +527,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -553,6 +560,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -587,6 +595,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -618,6 +627,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -649,6 +659,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -680,6 +691,42 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
+        self.assertIn('free_until', res.data)
+        self.assertNotIn('password', res.data)
+        self.assertNotIn('subscription', res.data)
+
+    def test_update_user_subscription_id_via_user_detail_view_leads_to_no_change(self):
+        """
+        Test that user cannot update subscription_id.
+        """
+        current_subscription_id = self.user.subscription_id
+        data = {
+            'subscription_id': 'updated_subscription_id'
+        }
+        res = self.client.patch(reverse('users:user-detail'), data)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        user = get_user_model().objects.all()[0]
+        self.assertEqual(user.first_name, 'John')
+        self.assertEqual(user.email, 'test@test.com')
+        self.assertEqual(user.last_name, 'Doe')
+        self.assertEqual(user.company_name, '3DP')
+        self.assertEqual(user.subscription_id, current_subscription_id)
+        self.assertNotEqual(user.subscription_id, data['subscription_id'])
+
+        self.assertEqual(res.data['subscription_id'], current_subscription_id)
+        self.assertNotEqual(res.data['subscription_id'], data['subscription_id'])
+        self.assertIn('id', res.data)
+        self.assertIn('email', res.data)
+        self.assertIn('first_name', res.data)
+        self.assertIn('last_name', res.data)
+        self.assertIn('company_name', res.data)
+        self.assertIn('scats_credit', res.data)
+        self.assertIn('seasonality_credit', res.data)
+        self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
@@ -714,6 +761,7 @@ class PrivateUsersApiTests(TestCase):
         self.assertIn('scats_credit', res.data)
         self.assertIn('seasonality_credit', res.data)
         self.assertIn('subscribed', res.data)
+        self.assertIn("subscription_id", res.data)
         self.assertIn('free_until', res.data)
         self.assertNotIn('password', res.data)
         self.assertNotIn('subscription', res.data)
