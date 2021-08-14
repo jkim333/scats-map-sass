@@ -5,8 +5,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 import stripe
-from djstripe.models import Subscription
+from djstripe.models import Subscription, Customer
+from djstripe import webhooks
+from django.contrib.auth import get_user_model
 from .serializers import SubscriptionSerializer
+import json
 
 if settings.STRIPE_LIVE_MODE:
     stripe.api_key = settings.STRIPE_LIVE_SECRET_KEY
@@ -46,6 +49,7 @@ class CreateCheckoutSessionView(APIView):
                         'price': settings.STRIPE_SUBSCRIPTION_PRICE_ID,
                         'quantity': 1
                     }],
+                    metadata={'subscription': True}
                 )
             else:
                 # custom order consisting of different product items
@@ -53,17 +57,23 @@ class CreateCheckoutSessionView(APIView):
                 
                 if len(orders) == 0: raise Exception('Your order cannot be empty.')
 
+                line_items=[
+                    {
+                        'price': item['product_id'],
+                        'quantity': item['quantity']
+                    }
+                for item in orders]
+
                 checkout_session = stripe.checkout.Session.create(
                     customer_email=email,
                     payment_method_types=[
                         'card',
                     ],
-                    line_items=[
-                        {
-                            'price': item['product_id'],
-                            'quantity': item['quantity']
-                        }
-                    for item in orders],
+                    line_items=line_items,
+                    metadata={
+                        'subscription': False,
+                        'line_items': json.dumps(line_items)
+                    },
                     mode='payment',
                     success_url=f'{FRONTEND_DOMAIN}/success',
                     cancel_url=f'{FRONTEND_DOMAIN}/cancelled',
@@ -170,3 +180,37 @@ class ReactivateCancelledSubscriptionView(APIView):
             {'message': 'Your subscription is now successfully reactivated.'},
             status=status.HTTP_200_OK
         )
+
+
+@webhooks.handler("checkout.session.completed")
+def checkout_handler(event, **kwargs):
+    customer_email = event.data['object']['customer_details']['email']
+    user = get_user_model().objects.get(email=customer_email)
+
+    is_subscription = event.data['object']['metadata']['subscription']
+
+    if is_subscription == 'True':
+        user.subscribed = True
+        user.subscription_id = event.data['object']['subscription']
+    else:
+        line_items = json.loads(event.data['object']['metadata']['line_items'])
+        for line_item in line_items:
+            if line_item['price'] == settings.STRIPE_SCATS_CREDIT_PRICE_ID:
+                user.scats_credit += line_item['quantity']
+            if line_item['price'] == settings.STRIPE_SEASONALITY_CREDIT_PRICE_ID:
+                user.seasonality_credit += line_item['quantity']
+
+    user.save()
+
+
+@webhooks.handler("customer.subscription.deleted")
+def subscription_deleted_handler(event, **kwargs):
+    customer_id = event.data['object']['customer']
+    customer = Customer.objects.get(id=customer_id)
+    customer_email = customer.email
+
+    user = get_user_model().objects.get(email=customer_email)
+
+    user.subscribed = False
+
+    user.save()
