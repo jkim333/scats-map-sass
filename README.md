@@ -42,8 +42,8 @@ Once pip has finished downloading the dependencies:
 
 ```sh
 (env)$ cd project
-(env)$ python manage.py runserver
 (env)$ python manage.py migrate
+(env)$ python manage.py runserver
 ```
 
 <br>
