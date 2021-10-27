@@ -1,8 +1,50 @@
 # SCATS Map
 
-In Victoria ...
+Major traffic signals in Victoria in Australia are managed by the Sydney Coordinated Adaptive Traffic System (SCATS). SCATS manages the operation of the signals dynamically and collects and stores traffic volumes data through its detectors. SCATS data is made openly available by the Victorian Government (https://discover.data.vic.gov.au/dataset/traffic-signal-volume-data) and is widely used by the transport engineers and planners to analyse how the intersections and the transport network as a whole performs.
 
-This app was made to ...
+It is a common practice in the transport engineering and planning industry to manually download the SCATS data which is provided in .csv format and analyse the data through the use of programs such as Microsoft Excel. Engineers and planners spend a lot of time analysing the extracted data to gain insights on the performance of intersections. Based on my experience formerly as a transport engineer, I have found this process to be repetitive and time consuming.
+
+This app was developed to make the whole process of working with the SCATS data easy and quick, by providing an API service to the users using Python Django as the backend. Depending on the task, it is estimated that this app can save from 30 minutes to several hours of time per individual task, which can bring significant time saving to the individual when compounded over time. Simply put, this app can provide time saving to anyone who works with the SCATS data in Victoria.
+
+There are three main functionalities this app provides:
+
+1. Download Opsheet data for an individual site (https://discover.data.vic.gov.au/dataset/traffic-signal-configuration-data-sheets)
+2. Extract SCATS data for an individual site (https://discover.data.vic.gov.au/dataset/traffic-signal-volume-data)
+3. Undertake sesonality analysis of an individual site
+
+As this app was designed to be a Software as a Service solution, this app uses Stripe (https://stripe.com/au) as a payment gateway to accept payment from users to use the services provided by this app. Users can either purchase credit points for individual uses or purchase a monthly subscription.
+
+<br>
+
+# Installation
+
+The first thing to do is to clone the repository:
+
+```sh
+$ git clone git@github.com:jkim333/scats-map-sass.git
+$ cd scats-map-sass
+```
+
+Create a virtual environment to install dependencies and activate it:
+
+```sh
+$ python venv env
+$ source env/bin/activate
+```
+
+Then install the dependencies:
+
+```sh
+(env)$ pip install -r requirements.txt
+```
+
+Once pip has finished downloading the dependencies:
+
+```sh
+(env)$ cd project
+(env)$ python manage.py runserver
+(env)$ python manage.py migrate
+```
 
 <br>
 
